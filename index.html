@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FitTrack</title>
+  <meta name="theme-color" content="#16a34a">
+  <meta name="description" content="Track nutrition, workouts, water and weight.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ============ LOGIN / SIGN UP ============ -->
+  <section id="auth" class="auth hidden">
+    <div class="auth-card">
+      <div class="logo">🥗</div>
+      <h1>FitTrack</h1>
+      <p class="muted">Nutrition &amp; fitness tracker</p>
+
+      <div class="seg" role="tablist">
+        <button type="button" class="seg-btn active" data-auth-tab="login">Log in</button>
+        <button type="button" class="seg-btn" data-auth-tab="signup">Sign up</button>
+      </div>
+
+      <form id="auth-form" autocomplete="on" novalidate>
+        <label id="name-field" class="hidden">Name
+          <input id="auth-name" type="text" autocomplete="name" placeholder="Your name">
+        </label>
+        <label>Email
+          <input id="auth-email" type="email" autocomplete="email" placeholder="you@example.com" required>
+        </label>
+        <label>Password
+          <input id="auth-pass" type="password" autocomplete="current-password" placeholder="At least 6 characters" required>
+        </label>
+        <p id="auth-error" class="error" role="alert"></p>
+        <button id="auth-submit" class="btn primary block" type="submit">Log in</button>
+      </form>
+      <p class="tiny muted">Accounts are stored only on this device.</p>
+    </div>
+  </section>
+
+  <!-- ============ APP ============ -->
+  <div id="app" class="hidden">
+    <header class="topbar">
+      <div>
+        <div class="muted tiny">Hello,</div>
+        <strong id="hello">there</strong>
+      </div>
+      <div class="datenav">
+        <button class="icon-btn" id="prev-day" aria-label="Previous day">‹</button>
+        <input id="date" type="date" aria-label="Date">
+        <button class="icon-btn" id="next-day" aria-label="Next day">›</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Dashboard -->
+      <section id="view-dashboard" class="view active">
+        <div id="dash"></div>
+      </section>
+
+      <!-- Food -->
+      <section id="view-food" class="view">
+        <form id="food-form" class="card">
+          <h2>Add food</h2>
+          <input id="food-name" list="food-presets" placeholder="Food name (try “Banana”)" required>
+          <datalist id="food-presets"></datalist>
+          <select id="food-meal">
+            <option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option>
+          </select>
+          <div class="grid4">
+            <label>Calories<input id="food-cal" type="number" min="0" step="1" inputmode="numeric"></label>
+            <label>Protein g<input id="food-protein" type="number" min="0" step="0.1" inputmode="decimal"></label>
+            <label>Carbs g<input id="food-carbs" type="number" min="0" step="0.1" inputmode="decimal"></label>
+            <label>Fat g<input id="food-fat" type="number" min="0" step="0.1" inputmode="decimal"></label>
+          </div>
+          <p class="tiny muted">Leave calories empty and I’ll work them out from the macros.</p>
+          <button class="btn primary block" type="submit">Add</button>
+        </form>
+        <div id="food-list"></div>
+      </section>
+
+      <!-- Workouts -->
+      <section id="view-workouts" class="view">
+        <form id="workout-form" class="card">
+          <h2>Log workout</h2>
+          <select id="w-type"></select>
+          <div class="grid2">
+            <label>Minutes<input id="w-min" type="number" min="1" step="1" inputmode="numeric" required></label>
+            <label>Calories burned<input id="w-cal" type="number" min="0" step="1" inputmode="numeric" placeholder="auto"></label>
+          </div>
+          <input id="w-note" placeholder="Notes (optional)">
+          <button class="btn primary block" type="submit">Add</button>
+        </form>
+        <div id="workout-list"></div>
+      </section>
+
+      <!-- Progress -->
+      <section id="view-progress" class="view">
+        <div class="card">
+          <h2>Calories, last 7 days</h2>
+          <canvas id="chart-cal" class="chart"></canvas>
+        </div>
+        <form id="weight-form" class="card">
+          <h2>Weight</h2>
+          <div class="row">
+            <input id="weight-kg" type="number" min="20" max="400" step="0.1" inputmode="decimal" placeholder="kg" required>
+            <button class="btn primary" type="submit">Log</button>
+          </div>
+          <canvas id="chart-weight" class="chart"></canvas>
+          <div id="weight-list"></div>
+        </form>
+      </section>
+
+      <!-- Profile -->
+      <section id="view-profile" class="view">
+        <form id="goals-form" class="card">
+          <h2>Daily goals</h2>
+          <div class="grid2">
+            <label>Calories<input id="g-cal" type="number" min="500" step="10" required></label>
+            <label>Water (glasses)<input id="g-water" type="number" min="1" step="1" required></label>
+            <label>Protein g<input id="g-protein" type="number" min="0" step="1" required></label>
+            <label>Carbs g<input id="g-carbs" type="number" min="0" step="1" required></label>
+            <label>Fat g<input id="g-fat" type="number" min="0" step="1" required></label>
+          </div>
+          <button class="btn primary block" type="submit">Save goals</button>
+          <p id="goals-msg" class="tiny muted"></p>
+        </form>
+
+        <div class="card">
+          <h2>Account &amp; data</h2>
+          <p class="muted tiny" id="account-email"></p>
+          <button id="install-btn" class="btn block hidden" type="button">Install app</button>
+          <button id="export-btn" class="btn block" type="button">Export my data (JSON)</button>
+          <button id="reset-btn" class="btn danger block" type="button">Erase my logs</button>
+          <button id="logout-btn" class="btn block" type="button">Log out</button>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tabbar">
+      <button class="tab active" data-view="dashboard"><span>🏠</span>Home</button>
+      <button class="tab" data-view="food"><span>🍎</span>Food</button>
+      <button class="tab" data-view="workouts"><span>🏋️</span>Workout</button>
+      <button class="tab" data-view="progress"><span>📈</span>Progress</button>
+      <button class="tab" data-view="profile"><span>👤</span>Profile</button>
+    </nav>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
